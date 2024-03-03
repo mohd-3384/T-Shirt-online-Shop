@@ -2,7 +2,7 @@ import React from 'react';
 import './details.css'
 import { useGetOneProductQuery } from '../../Redux/productsApi';
 import { useParams } from 'react-router-dom';
-import { Badge, Box, Button, CircularProgress, IconButton, Stack, Typography, styled } from '@mui/material';
+import { Badge, Box, Button, CircularProgress, IconButton, Stack, Typography, styled, useTheme } from '@mui/material';
 import { useRef, useState } from "react";
 import DetailsThumb from './DetailsThumb'
 import { Add, Remove } from '@mui/icons-material';
@@ -10,10 +10,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, decreaseQuantity, increaseQuantity } from '../../Redux/cardSlice';
 
 
-const StyledBadge = styled(Badge)(() => ({
+
+
+const StyledBadge = styled(Badge)(({ theme }) => ({
     '& .MuiBadge-badge': {
-        backgroundColor: "#1976d2",
-        color: "white"
+        backgroundColor: `${theme.palette.primary.main}`,
+        color: `${theme.palette.primary.contrastText}`,
+        fontWeight: 'bold'
     },
 }));
 
@@ -24,6 +27,8 @@ const StyledBadge = styled(Badge)(() => ({
 
 const Details = () => {
 
+    const theme = useTheme()
+
     let { id } = useParams();
     const { data, error, isLoading } = useGetOneProductQuery(id)
 
@@ -31,7 +36,6 @@ const Details = () => {
     const myRef = useRef(null);
 
     const handleTab = (index) => {
-        // this.setState({index: index})
         setindex(index);
         const images = myRef.current.children;
         for (let i = 0; i < images.length; i++) {
@@ -65,6 +69,7 @@ const Details = () => {
         )
     }
 
+
     // Error
     if (error) {
         return (
@@ -75,21 +80,26 @@ const Details = () => {
         )
     }
 
+
     // Data
     if (data) {
         return (
             <div className="app details-page">
                 <div className="details">
                     <div className="big-img">
-                        <img src={data.imageLink[index]} alt="" />
+                        <img
+                            src={data.imageLink[index]}
+                            alt="" />
                     </div>
 
                     <div className="box">
                         <div className="row">
                             <h2>{data.productName}</h2>
-                            <span>{data.price} €</span>
+                            <span
+                                style={{ color: theme.palette.error.light, fontWeight: "bold" }}>
+                                {data.price} €
+                            </span>
                         </div>
-                        {/* <Colors colors={data.colors} /> */}
 
                         <p>{data.description}</p>
 
@@ -99,42 +109,41 @@ const Details = () => {
                             myRef={myRef}
                         />
 
-                        {
-                            selectedProductsID.includes(data.id) ?
-                                <Stack
-                                    direction={"row"}
-                                    alignItems={"center"}>
-                                    <IconButton
-                                        sx={{ color: "#1976d2", mr: 1.5 }}
-                                        aria-label=""
-                                        onClick={() => {
-                                            dispatch(increaseQuantity(data))
-                                        }}>
-                                        <Add />
-                                    </IconButton>
-
-                                    <StyledBadge
-                                        badgeContent={productQuantity(data)}
-                                        color="secondary" />
-
-                                    <IconButton
-                                        sx={{ color: "#1976d2", ml: 1.5 }}
-                                        aria-label=""
-                                        onClick={() => {
-                                            dispatch(decreaseQuantity(data))
-                                        }}>
-                                        <Remove />
-                                    </IconButton>
-                                </Stack>
-                                : // else
-                                <Button
-                                    variant="contained"
-                                    color="primary"
+                        {selectedProductsID.includes(data.id) ?
+                            <Stack
+                                direction={"row"}
+                                alignItems={"center"}
+                                sx={{ mt: 4.5 }}>
+                                <IconButton
+                                    sx={{ color: theme.palette.primary.main, mr: 1.5 }}
+                                    aria-label=""
                                     onClick={() => {
-                                        dispatch(addToCart(data))
+                                        dispatch(increaseQuantity(data))
                                     }}>
-                                    In den Warenkorb
-                                </Button>
+                                    <Add />
+                                </IconButton>
+
+                                <StyledBadge
+                                    badgeContent={productQuantity(data)} />
+
+                                <IconButton
+                                    sx={{ color: theme.palette.primary.main, ml: 1.5 }}
+                                    aria-label=""
+                                    onClick={() => {
+                                        dispatch(decreaseQuantity(data))
+                                    }}>
+                                    <Remove />
+                                </IconButton>
+                            </Stack>
+                            :
+                            <Button
+                                variant="contained"
+                                sx={{ mt: 4 }}
+                                onClick={() => {
+                                    dispatch(addToCart(data))
+                                }}>
+                                In den Warenkorb
+                            </Button>
                         }
                     </div>
                 </div>

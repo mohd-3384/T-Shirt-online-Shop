@@ -1,5 +1,4 @@
 import { Badge, Box, Button, CircularProgress, IconButton, Stack } from '@mui/material';
-import './Home.css';
 import { styled, useTheme } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
@@ -13,10 +12,11 @@ import { Add, Remove } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
 
-const StyledBadge = styled(Badge)(() => ({
+const StyledBadge = styled(Badge)(({ theme }) => ({
     '& .MuiBadge-badge': {
-        backgroundColor: "#1976d2",
-        color: "white"
+        backgroundColor: `${theme.palette.primary.main}`,
+        color: `${theme.palette.primary.contrastText}`,
+        fontWeight: 'bold'
     },
 }));
 
@@ -27,7 +27,7 @@ const Home = () => {
     const navigate = useNavigate()
     const theme = useTheme()
 
-    const { data, error, isLoading } = useGetproductsByNameQuery('')
+    const { data, error, isLoading } = useGetproductsByNameQuery()
 
     const dispatch = useDispatch()
 
@@ -35,8 +35,8 @@ const Home = () => {
     const { selectedProducts, selectedProductsID } = useSelector((state) => state.cartt)
 
     const productQuantity = (itemAPI) => {
-        const myProduct = selectedProducts.find((item) => {
-            return item.id === itemAPI.id
+        const myProduct = selectedProducts.find((itemUser) => {
+            return itemUser.id === itemAPI.id
         })
         return myProduct.quantity
     }
@@ -77,8 +77,7 @@ const Home = () => {
                     return (
                         <Card
                             key={item.id}
-                            className='card'
-                            sx={{ maxWidth: 277, mb: 4, mx: 2 }}>
+                            sx={{ maxWidth: 277, mb: 4, mx: 2, '&:hover': { rotate: '.5deg', scale: '1.01', transition: '.3s' } }}>
                             <CardMedia
                                 sx={{ '&:hover': { cursor: 'pointer' } }}
                                 component="img"
@@ -101,42 +100,40 @@ const Home = () => {
                             <CardActions
                                 sx={{ justifyContent: "space-between" }}
                                 disableSpacing>
-                                {
-                                    selectedProductsID.includes(item.id) ? // 
-                                        <Stack
-                                            direction={"row"}
-                                            alignItems={"center"}>
-                                            <IconButton
-                                                sx={{ color: "#1976d2", mr: 1.5 }}
-                                                aria-label=""
-                                                onClick={() => {
-                                                    dispatch(increaseQuantity(item))
-                                                }}>
-                                                <Add />
-                                            </IconButton>
-
-                                            <StyledBadge
-                                                badgeContent={productQuantity(item)}
-                                                color="secondary" />
-
-                                            <IconButton
-                                                sx={{ color: "#1976d2", ml: 1.5 }}
-                                                aria-label=""
-                                                onClick={() => {
-                                                    dispatch(decreaseQuantity(item))
-                                                }}>
-                                                <Remove />
-                                            </IconButton>
-                                        </Stack>
-                                        : // else
-                                        <Button
-                                            variant="contained"
-                                            color="primary"
+                                {selectedProductsID.includes(item.id) ?
+                                    <Stack
+                                        direction={"row"}
+                                        alignItems={"center"}>
+                                        <IconButton
+                                            sx={{ color: theme.palette.primary.main, mr: 1.5 }}
+                                            aria-label=""
                                             onClick={() => {
-                                                dispatch(addToCart(item))
+                                                dispatch(increaseQuantity(item)) // from cardSlice.js
                                             }}>
-                                            In den Warenkorb
-                                        </Button>
+                                            <Add />
+                                        </IconButton>
+
+                                        <StyledBadge
+                                            badgeContent={productQuantity(item)} // from cardSlice.js
+                                        />
+
+                                        <IconButton
+                                            sx={{ color: theme.palette.primary.main, ml: 1.5 }}
+                                            aria-label=""
+                                            onClick={() => {
+                                                dispatch(decreaseQuantity(item)) // from cardSlice.js
+                                            }}>
+                                            <Remove />
+                                        </IconButton>
+                                    </Stack>
+                                    : // else
+                                    <Button
+                                        variant="contained"
+                                        onClick={() => {
+                                            dispatch(addToCart(item)) // from cardSlice.js
+                                        }}>
+                                        In den Warenkorb
+                                    </Button>
                                 }
 
                                 <Typography
@@ -152,6 +149,5 @@ const Home = () => {
             </Stack>
         );
     }
-
 }
 export default Home;

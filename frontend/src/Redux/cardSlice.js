@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-    selectedProducts: localStorage.getItem("selectedProducts") ? JSON.parse(localStorage.getItem("selectedProducts")) : [], // ==> in Cart.jsx & Drawer.jsx
+    // localStorage.getItem
+    selectedProducts: localStorage.getItem("selectedProducts") ? JSON.parse(localStorage.getItem("selectedProducts")) : [],
     selectedProductsID: localStorage.getItem("selectedProductsID") ? JSON.parse(localStorage.getItem("selectedProductsID")) : []
 }
 
@@ -14,10 +15,11 @@ export const cardSlice = createSlice({
             const productQuantity = { ...action.payload, "quantity": 1 }
             state.selectedProducts.push(productQuantity)
             state.selectedProductsID.push(action.payload.id)
-
+            // localStorage.setItem
             localStorage.setItem("selectedProducts", JSON.stringify(state.selectedProducts))
             localStorage.setItem("selectedProductsID", JSON.stringify(state.selectedProductsID))
         },
+
 
 
         // Produktmenge erhöhen
@@ -26,8 +28,10 @@ export const cardSlice = createSlice({
                 return item.id === action.payload.id
             })
             increasedProduct.quantity += 1
+            // localStorage.setItem
             localStorage.setItem("selectedProducts", JSON.stringify(state.selectedProducts))
         },
+
 
 
         // Produktmenge minimieren
@@ -36,21 +40,25 @@ export const cardSlice = createSlice({
                 return item.id === action.payload.id
             })
             decreasedProduct.quantity -= 1
+
+            // das gewählte Produkt löschen
             if (decreasedProduct.quantity === 0) {
                 const newArr = state.selectedProducts.filter((item) => {
                     return item.id !== action.payload.id
                 })
 
-                const newArr2 = state.selectedProductsID.filter((item) => {
+                const newArrID = state.selectedProductsID.filter((item) => {
                     return item !== action.payload.id
                 })
-
+                // localStorage.setItem
                 state.selectedProducts = newArr
-                state.selectedProductsID = newArr2
+                state.selectedProductsID = newArrID
                 localStorage.setItem("selectedProductsID", JSON.stringify(state.selectedProductsID))
             }
+            // localStorage.setItem
             localStorage.setItem("selectedProducts", JSON.stringify(state.selectedProducts))
         },
+
 
 
         // Produkt vom Warenkorb löschen
@@ -65,7 +73,7 @@ export const cardSlice = createSlice({
 
             state.selectedProducts = newArr
             state.selectedProductsID = newArr2
-
+            // localStorage.setItem
             localStorage.setItem("selectedProducts", JSON.stringify(state.selectedProducts))
             localStorage.setItem("selectedProductsID", JSON.stringify(state.selectedProductsID))
         },

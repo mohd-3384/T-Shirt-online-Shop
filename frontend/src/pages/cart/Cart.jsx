@@ -1,14 +1,14 @@
 import { Box, Paper, IconButton, Badge, styled, useTheme, Typography, Divider, Stack, Button, CardMedia } from '@mui/material';
-import './Cart.css';
 import { Add, Delete, Remove } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { decreaseQuantity, deleteProduct, increaseQuantity } from '../../Redux/cardSlice';
 
 
-const StyledBadge = styled(Badge)(() => ({
+const StyledBadge = styled(Badge)(({ theme }) => ({
     '& .MuiBadge-badge': {
-        backgroundColor: "#1976d2",
-        color: "white"
+        backgroundColor: `${theme.palette.primary.main}`,
+        color: `${theme.palette.primary.contrastText}`,
+        fontWeight: 'bold'
     },
 }));
 
@@ -33,8 +33,10 @@ const Cart = () => {
                 summe += Number(item.price) * Number(item.quantity)
                 return (
                     <Paper
-                        sx={{ maxWidth: "60vw", width: "600px", p: 2, display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "center", mb: 5, borderTop: "1px solid #1976d2", borderBottom: "1px solid #1976d2" }}
-                        key={item.id}>
+                        sx={{
+                            width: { xl: "650px", sm: "400px", xs: "95vw" }, p: 2, display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "center", my: 5, borderTop: `2px solid ${theme.palette.primary.main}`
+                        }}
+                        key={item.id} >
                         <Stack
                             direction={"row"}
                             alignItems={"center"}
@@ -55,23 +57,22 @@ const Cart = () => {
                             direction={"row"}
                             alignItems={"center"}>
                             <IconButton
-                                sx={{ color: "#1976d2", mr: 1.5 }}
+                                sx={{ color: theme.palette.primary.main, mr: 1.5 }}
                                 aria-label=""
                                 onClick={() => {
-                                    dispatch(increaseQuantity(item))
+                                    dispatch(increaseQuantity(item)) // from cardSlice.js
                                 }}>
                                 <Add />
                             </IconButton>
 
                             <StyledBadge
-                                badgeContent={item.quantity}
-                                color="secondary" />
+                                badgeContent={item.quantity} />
 
                             <IconButton
-                                sx={{ color: "#1976d2", ml: 1.5 }}
+                                sx={{ color: theme.palette.primary.main, ml: 1.5 }}
                                 aria-label=""
                                 onClick={() => {
-                                    dispatch(decreaseQuantity(item))
+                                    dispatch(decreaseQuantity(item)) // from cardSlice.js
                                 }}>
                                 <Remove />
                             </IconButton>
@@ -79,14 +80,14 @@ const Cart = () => {
 
                         <Typography
                             variant='body1'>
-                            {Number(item.price) * Number(item.quantity)} €
+                            {Number((item.price) * Number(item.quantity)).toFixed(2)} €
                         </Typography>
 
                         <IconButton
                             sx={{ color: theme.palette.error.main, ml: 1 }}
                             aria-label=""
                             onClick={() => {
-                                dispatch(deleteProduct(item))
+                                dispatch(deleteProduct(item)) // from cardSlice.js
                             }}>
                             <Delete />
                         </IconButton>
@@ -97,7 +98,7 @@ const Cart = () => {
 
 
             <Paper
-                sx={{ width: "240px", mx: "auto", mt: 8 }}>
+                sx={{ width: "240px", mx: "auto", mt: 8, boxShadow: "0 0 3px #555" }}>
                 <Typography
                     align='center'
                     variant="h5" p={2} >
@@ -108,14 +109,14 @@ const Cart = () => {
 
                 <Stack
                     direction={"row"}
-                    sx={{ justifyContent: "space-around", p: 1.2 }}>
+                    sx={{ justifyContent: "space-around", alignItems: "center", p: 1.2 }}>
                     <Typography
-                        variant="body1">
+                        variant="h6">
                         Summe:
                     </Typography>
                     <Typography
-                        variant="body1">
-                        {summe} €
+                        variant="h6">
+                        {summe.toFixed(2)} €
                     </Typography>
                 </Stack>
 
