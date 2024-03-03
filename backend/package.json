@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev": "node index.js",
-    "build": "react-scripts build"
+    "build": "npm i"
   },
   "dependencies": {
     "cors": "^2.8.5",
