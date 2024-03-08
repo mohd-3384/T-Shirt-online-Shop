@@ -98,7 +98,7 @@ const Cart = () => {
 
 
             <Paper
-                sx={{ width: "240px", mx: "auto", mt: 8, boxShadow: "0 0 3px #555" }}>
+                sx={{ width: "240px", mx: "auto", my: 8, boxShadow: "0 0 3px #555" }}>
                 <Typography
                     align='center'
                     variant="h5" p={2} >
